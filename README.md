@@ -2,7 +2,7 @@
 
 > **Production-ready web application for analyzing Calgary zoning bylaws and development feasibility**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/calgary-bylaw-assistant)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/rajshah9305/calgary-bylaw-assistant)
 
 A comprehensive, user-friendly tool that helps property owners, investors, and developers understand what they can build on any Calgary property. Get instant feasibility reports, cost estimates, and expert guidance - all in plain English.
 
@@ -40,7 +40,7 @@ A comprehensive, user-friendly tool that helps property owners, investors, and d
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/calgary-bylaw-assistant.git
+git clone https://github.com/rajshah9305/calgary-bylaw-assistant.git
 cd calgary-bylaw-assistant
 
 # Install dependencies
