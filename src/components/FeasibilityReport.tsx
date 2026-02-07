@@ -7,17 +7,24 @@ import {
   Building,
   Layers,
   Ruler,
-  Info
+  Info,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { ActionButtons } from '@/components/ActionButtons';
 import { PropertyStats } from '@/components/PropertyStats';
+import { DetailedAnalysisPanel } from '@/components/DetailedAnalysisPanel';
+import { NotificationBanner } from '@/components/NotificationBanner';
+import { ExportMenu } from '@/components/ExportMenu';
 import type { FeasibilityResult, ZoningData } from '@/types/zoning';
 import { getZoneLabel } from '@/lib/zoning-analysis';
+import { getDetailedAnalysis } from '@/lib/advanced-analysis';
 import { generatePDFReport } from '@/lib/pdf-export';
 import { addBookmark, isBookmarked as checkIsBookmarked } from '@/lib/storage';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 interface FeasibilityReportProps {
   result: FeasibilityResult;
@@ -28,30 +35,30 @@ function StatusBadge({ status }: { status: string }) {
   switch (status) {
     case 'permitted':
       return (
-        <span className="status-permitted">
+        <span className="status-permitted text-xs">
           <CheckCircle2 className="w-3.5 h-3.5" />
-          Permitted
+          ✅ Yes, You Can!
         </span>
       );
     case 'likely':
       return (
-        <span className="status-likely">
+        <span className="status-likely text-xs">
           <HelpCircle className="w-3.5 h-3.5" />
-          Likely (Discretionary)
+          ❓ Probably (Needs Approval)
         </span>
       );
     case 'prohibited':
       return (
-        <span className="status-prohibited">
+        <span className="status-prohibited text-xs">
           <XCircle className="w-3.5 h-3.5" />
-          Prohibited
+          ❌ Not Allowed
         </span>
       );
     case 'manual-review':
       return (
         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-warning/10 text-warning">
           <AlertTriangle className="w-3.5 h-3.5" />
-          Manual Review
+          ⚠️ Ask City Planning
         </span>
       );
     default:
@@ -88,6 +95,16 @@ function FeatureRow({
 
 export function FeasibilityReport({ result, zoningData }: FeasibilityReportProps) {
   const [isBookmarked, setIsBookmarked] = useState(checkIsBookmarked(zoningData));
+  const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false);
+  
+  const detailedAnalysis = useMemo(() => getDetailedAnalysis(zoningData), [zoningData]);
+
+  const exportData = useMemo(() => ({
+    zoningData,
+    feasibility: result,
+    detailedAnalysis,
+    timestamp: new Date().toLocaleString(),
+  }), [zoningData, result, detailedAnalysis]);
 
   const handleBookmark = () => {
     if (!isBookmarked) {
@@ -127,17 +144,23 @@ export function FeasibilityReport({ result, zoningData }: FeasibilityReportProps
 
   return (
     <div className="px-6 py-4 animate-slide-up">
+      {/* Notifications */}
+      <NotificationBanner zoningData={zoningData} />
+
       {/* Property Stats */}
       <PropertyStats zoningData={zoningData} />
 
-      {/* Action Buttons */}
-      <ActionButtons
-        zoningData={zoningData}
-        isBookmarked={isBookmarked}
-        onBookmark={handleBookmark}
-        onShare={handleShare}
-        onExportPDF={handleExportPDF}
-      />
+      {/* Action Buttons with Export */}
+      <div className="flex items-center gap-2 mb-4">
+        <ActionButtons
+          zoningData={zoningData}
+          isBookmarked={isBookmarked}
+          onBookmark={handleBookmark}
+          onShare={handleShare}
+          onExportPDF={handleExportPDF}
+        />
+        <ExportMenu data={exportData} />
+      </div>
       {/* Zone Overview Card */}
       <Card className="mb-4 shadow-card">
         <CardHeader className="pb-3">
@@ -166,10 +189,10 @@ export function FeasibilityReport({ result, zoningData }: FeasibilityReportProps
         <div className="warning-box mb-4 flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium mb-1">Manual Review Needed</p>
+            <p className="font-medium mb-1">⚠️ Special Zone - Need City Help</p>
             <p className="text-sm opacity-90">
-              Direct Control districts have unique, site-specific bylaws that require 
-              individual assessment by the City of Calgary.
+              This is a "Direct Control" zone with unique rules. You'll need to contact 
+              City of Calgary Planning (call 311) to find out what's allowed here.
             </p>
           </div>
         </div>
@@ -178,26 +201,27 @@ export function FeasibilityReport({ result, zoningData }: FeasibilityReportProps
       {/* Feasibility Results */}
       <Card className="mb-4 shadow-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-semibold">Development Options</CardTitle>
+          <CardTitle className="text-base font-semibold">What Can You Build Here?</CardTitle>
+          <p className="text-xs text-muted-foreground mt-1">Click each option to learn more</p>
         </CardHeader>
         <CardContent className="pt-0">
           <FeatureRow
             icon={Home}
-            label="Backyard Suite"
+            label="Backyard Suite (Laneway Home)"
             status={result.backyardSuite.status}
             description={result.backyardSuite.description}
           />
           <Separator />
           <FeatureRow
             icon={Layers}
-            label="Secondary Suite"
+            label="Secondary Suite (Basement/Upper)"
             status={result.secondarySuite.status}
             description={result.secondarySuite.description}
           />
           <Separator />
           <FeatureRow
             icon={Building}
-            label="Rowhouse (R-CG)"
+            label="Rowhouse (2-4 Attached Units)"
             status={result.rowhouse.status}
             description={result.rowhouse.description}
           />
@@ -240,6 +264,35 @@ export function FeasibilityReport({ result, zoningData }: FeasibilityReportProps
           </CardContent>
         </Card>
       )}
+
+      {/* Detailed Analysis Toggle */}
+      <Card className="mb-4 shadow-card">
+        <CardHeader 
+          className="cursor-pointer hover:bg-secondary/50 transition-colors"
+          onClick={() => setShowDetailedAnalysis(!showDetailedAnalysis)}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-semibold">
+                📊 See All The Details
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                Costs, timelines, lot requirements & more
+              </p>
+            </div>
+            {showDetailedAnalysis ? (
+              <ChevronUp className="w-5 h-5 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
+            )}
+          </div>
+        </CardHeader>
+        {showDetailedAnalysis && (
+          <CardContent className="pt-0">
+            <DetailedAnalysisPanel analysis={detailedAnalysis} />
+          </CardContent>
+        )}
+      </Card>
 
     </div>
   );

@@ -1,21 +1,48 @@
 {
   "name": "calgary-bylaw-assistant",
-  "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "Production-ready web application for analyzing Calgary zoning bylaws and development feasibility",
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/calgary-bylaw-assistant.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/calgary-bylaw-assistant/issues"
+  },
+  "homepage": "https://github.com/yourusername/calgary-bylaw-assistant#readme",
+  "keywords": [
+    "calgary",
+    "zoning",
+    "bylaw",
+    "real-estate",
+    "property-development",
+    "feasibility-analysis",
+    "react",
+    "typescript",
+    "vite",
+    "mapbox"
+  ],
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --port 8080",
+    "build": "tsc && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview --port 8080",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@types/mapbox-gl": "^3.4.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -47,5 +74,9 @@
     "typescript-eslint": "^8.38.0",
     "vite": "^5.4.19",
     "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

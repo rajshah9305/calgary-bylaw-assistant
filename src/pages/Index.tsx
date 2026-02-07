@@ -8,6 +8,8 @@ import { LoadingState } from '@/components/LoadingState';
 import { EmptyState } from '@/components/EmptyState';
 import { MapSetupModal } from '@/components/MapSetupModal';
 import { MapErrorState } from '@/components/MapErrorState';
+import { OnboardingTour } from '@/components/OnboardingTour';
+import { FloatingHelpButton } from '@/components/FloatingHelpButton';
 import { useMapboxToken } from '@/hooks/useMapboxToken';
 import { analyzeZoning } from '@/lib/zoning-analysis';
 import { geocodeAddress } from '@/lib/geocoding';
@@ -125,6 +127,9 @@ const Index = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
+      {/* Onboarding Tour */}
+      <OnboardingTour />
+      
       {/* Left Panel */}
       <div className="w-[38%] min-w-[380px] max-w-[520px] flex flex-col border-r border-divider bg-panel">
         <Header />
@@ -204,6 +209,9 @@ const Index = () => {
         open={shouldShowModal || showSetupModal}
         onSave={handleTokenSave}
       />
+
+      {/* Floating Help Button */}
+      <FloatingHelpButton />
     </div>
   );
 };

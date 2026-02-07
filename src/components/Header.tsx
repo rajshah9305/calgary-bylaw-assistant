@@ -1,4 +1,5 @@
 import { Building2, BadgeCheck } from 'lucide-react';
+import { HelpButton } from './HelpButton';
 
 export function Header() {
   return (
@@ -10,14 +11,17 @@ export function Header() {
           </div>
           <div>
             <h1 className="text-xl font-semibold text-foreground">The Bylaw Bot</h1>
-            <p className="text-sm text-muted-foreground">Calgary Zoning Feasibility</p>
+            <p className="text-sm text-muted-foreground">Calgary Zoning Made Simple</p>
           </div>
         </div>
         
-        <div className="badge-amnesty">
-          <BadgeCheck className="w-3.5 h-3.5" />
-          <span>Suite Amnesty Active (Fees Waived until 2026)</span>
-        </div>
+        <HelpButton />
+      </div>
+      
+      {/* Amnesty Badge - Full Width */}
+      <div className="mt-3 badge-amnesty">
+        <BadgeCheck className="w-3.5 h-3.5" />
+        <span>Suite Amnesty Active (Fees Waived until 2026)</span>
       </div>
     </header>
   );
